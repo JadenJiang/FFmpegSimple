@@ -22,16 +22,16 @@ endif(WIN32)
 set(3RDPART_PATH "${CMAKE_SOURCE_DIR}/3rdparty/${SYSTEM_PLATFORM}")
 
 set(FFMPEG_PATH "${3RDPART_PATH}/ffmpeg")
-set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${FFMPEG_PATH}/include)
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${FFMPEG_PATH}/lib )
+include_directories(${FFMPEG_PATH}/include)
+link_directories(${FFMPEG_PATH}/lib )
 set(CMAKE_LIBRARYS ${CMAKE_LIBRARYS} avcodec avformat avutil avdevice avfilter postproc swresample swscale)
 
-include_directories(${CMAKE_INCLUDE_PATH})
-link_directories(${CMAKE_LIBRARY_PATH})
+#include_directories(${CMAKE_INCLUDE_PATH})
+#link_directories(${CMAKE_LIBRARY_PATH})
 
 
-list(APPEND CMAKE_CXX_FLAGS "-std=c++11") 
-  
+add_compile_options(-std=c++11)
+add_definitions(-D__STDC_CONSTANT_MACROS)  
 
 set(PROJECTS
     capture_screen
@@ -39,16 +39,17 @@ set(PROJECTS
     libx265_encode
     mediadata_parser
     print_timestamp
+    audio_resample
     #audio_filter
     test_cpp
 )
 
 
 foreach(PROJECT  ${PROJECTS})
-    #MESSAGE(">>>", ${PROJECT})
     add_subdirectory(source/${PROJECT})
 endforeach(PROJECT)
 
+#MESSAGE(">>>" ${INCLUDE_DIRECTORIES})
 
 
 
