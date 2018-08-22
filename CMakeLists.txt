@@ -40,8 +40,10 @@ set(PROJECTS
     mediadata_parser
     print_timestamp
     audio_resample
+    sdl_player
     #audio_filter
     test_cpp
+    transcode
 )
 
 

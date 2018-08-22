@@ -33,7 +33,7 @@ int64_t x264_mdate(void)
 int main(int argc, char** argv)
 {
  
-    int ret;
+    int ret = 0;
     int y_size;
 
     int64_t start_time, end_time;
@@ -41,15 +41,14 @@ int main(int argc, char** argv)
     start_time = x264_mdate();
  
     //FILE* fp_src  = fopen("../cuc_ieschool_640x360_yuv444p.yuv", "rb");
-    FILE* fp_src  = fopen(R"(F:\videoFile\720p.yuv420p)", "rb");
- 
-    FILE* fp_dst = fopen(R"(F:\videoFile\1_.h264)", "wb");
+    FILE* fp_src  = fopen(R"(D:\videoFile\1080p.yuv420p)", "rb");
+    FILE* fp_dst = fopen(R"(D:\videoFile\test\1_.h264)", "wb");
         
 	//Encode 50 frame
 	//if set 0, encode all frame
-	int frame_num=500;
+	int frame_num=0;
 	int csp=X264_CSP_I420;
-	int width=1280,height=720;
+	int width=1920,height=1080;
 
 	int iNal   = 0;
 	x264_nal_t* pNals = NULL;
@@ -65,50 +64,69 @@ int main(int argc, char** argv)
 	}
 
 	x264_param_default(pParam);
-	x264_param_apply_profile(pParam, x264_profile_names[5]);
-	x264_param_default_preset(pParam, x264_preset_names[5], x264_tune_names[3]);
+	x264_param_default_preset(pParam, x264_preset_names[0], x264_tune_names[0]);
 
 
 	///////////////////////////X264_RC_CRF///////////////////////////////////////////////
- 	pParam->rc.i_rc_method = X264_RC_CRF;
- 	pParam->rc.f_rf_constant = 23;
+  	pParam->rc.i_rc_method = X264_RC_CRF;
+  	pParam->rc.f_rf_constant = 23;
+    pParam->rc.i_aq_mode = X264_AQ_VARIANCE;
+    pParam->b_cabac = 1;
+    pParam->analyse.intra = X264_ANALYSE_I4x4 | X264_ANALYSE_I8x8;
+    //pParam->analyse.inter = X264_ANALYSE_I4x4 | X264_ANALYSE_I8x8 | X264_ANALYSE_PSUB16x16 | X264_ANALYSE_PSUB8x8;
+    pParam->analyse.inter = X264_ANALYSE_I8x8 | X264_ANALYSE_I4x4;
+    ret = x264_param_parse(pParam, "deblock", "-1,-1");
+    pParam->analyse.i_subpel_refine = 2;
 
 	///////////////////////////X264_RC_CQP///////////////////////////////////////////////
-// 	pParam->rc.i_rc_method = X264_RC_CQP;
-// 	pParam->rc.i_qp_constant = 23;
-// 	pParam->rc.i_qp_min = 20;
-// 	pParam->rc.i_qp_max = 25;
+ 	//pParam->rc.i_rc_method = X264_RC_CQP;
+ 	//pParam->rc.i_qp_constant = 23;
+ 	//pParam->rc.i_qp_min = 20;
+ 	//pParam->rc.i_qp_max = 25;
 
 	//////////////////////////////X264_RC_ABR////////////////////////////////////////////
-	//pParam->rc.i_rc_method = X264_RC_ABR;
+    //pParam->rc.i_rc_method = X264_RC_ABR;
+    //pParam->rc.i_bitrate = 15000;
 	//pParam->rc.i_vbv_max_bitrate = 5000;
 	//pParam->rc.i_vbv_buffer_size = 5000;
-	//pParam->rc.i_bitrate   = 5000;
-	//pParam->b_tff = 1;
+	
 
-    ret = x264_param_parse(pParam, "nal-hrd", x264_nal_hrd_names[2]);
+    //ret = x264_param_parse(pParam, "colormatrix", x264_colmatrix_names[1]);
+    //ret = x264_param_parse(pParam, "colorprim", x264_colorprim_names[1]);
+    //ret = x264_param_parse(pParam, "transfer", x264_transfer_names[1]);
+    
+
 	pParam->i_width   = width; 
 	pParam->i_height  = height;
 	pParam->i_csp=csp;
-//	pParam->b_interlaced = 1;
-// 	pParam->i_log_level  = X264_LOG_DEBUG;
-// 	pParam->i_threads  = X264_SYNC_LOOKAHEAD_AUTO;
-// 	pParam->i_frame_total = 0;
-// 	pParam->i_keyint_max = 25;
-// 	pParam->i_bframe  = 5;
-// 	pParam->b_open_gop  = 0;
-// 	pParam->i_bframe_pyramid = 0;
-// 	pParam->rc.i_qp_constant=0;
-// 	pParam->rc.i_qp_max=0;
-// 	pParam->rc.i_qp_min=0;
-// 	pParam->i_bframe_adaptive = X264_B_ADAPT_TRELLIS;
-// 	pParam->i_fps_den  = 1; 
-// 	pParam->i_fps_num  = 25;
-// 	pParam->i_timebase_den = pParam->i_fps_num;
-// 	pParam->i_timebase_num = pParam->i_fps_den;
+
+    //ret = x264_param_parse(pParam, "nal-hrd", x264_nal_hrd_names[1]);
+    //pParam->b_vfr_input = 1;
+    pParam->rc.i_vbv_buffer_size = 32000;
+    pParam->rc.i_vbv_max_bitrate = 16000;
+    //pParam->analyse.inter = X264_ANALYSE_I8x8 | X264_ANALYSE_I4x4| X264_ANALYSE_PSUB16x16|X264_ANALYSE_PSUB8x8;
+    //pParam->b_interlaced = 0;
+    //pParam->i_log_level  = X264_LOG_DEBUG;
+ 	//pParam->i_threads  = X264_THREADS_AUTO;
+ 	//pParam->i_frame_total = 0;
+ 	//pParam->i_keyint_max = 25;
+ 	//pParam->i_bframe  = 5;
+ 	//pParam->b_open_gop  = 0;
+ 	//pParam->i_bframe_pyramid = 0;
+ 	//pParam->rc.i_qp_constant=0;
+ 	//pParam->rc.i_qp_max=0;
+ 	//pParam->rc.i_qp_min=0;
+ 	//pParam->i_bframe_adaptive = X264_B_ADAPT_TRELLIS;
+ 	//pParam->i_fps_den  = 1; 
+ 	//pParam->i_fps_num  = 25;
+ 	//pParam->i_timebase_den = pParam->i_fps_num;
+ 	//pParam->i_timebase_num = pParam->i_fps_den;
 	
-	
-	
+    //ret = x264_param_apply_profile(pParam, x264_profile_names[1]);
+    //if (ret < 0) {
+    //    printf("set profile error\n");
+    //    return -1;
+    //}
 	
 	pHandle = x264_encoder_open(pParam);
 
@@ -151,11 +169,11 @@ int main(int argc, char** argv)
 		}
 		pPic_in->i_pts = i_frame_output;
  		if(i_frame_output == frame_num/2){
-// 			pParam->rc.i_vbv_max_bitrate = 500;
-// 			pParam->rc.i_vbv_buffer_size = 500;
-// 			pParam->rc.i_bitrate   = 500;
-// 			pParam->rc.i_rc_method = X264_RC_ABR;
-// 			printf("<<<<reset i_bitrate[%d]>>>\n", x264_encoder_reconfig(pHandle, pParam));
+ 			//pParam->rc.i_vbv_max_bitrate = 500;
+ 			//pParam->rc.i_vbv_buffer_size = 500;
+ 			//pParam->rc.i_bitrate   = 500;
+ 			//pParam->rc.i_rc_method = X264_RC_ABR;
+ 			//printf("<<<<reset i_bitrate[%d]>>>\n", x264_encoder_reconfig(pHandle, pParam));
 		}
 
 		ret = x264_encoder_encode(pHandle, &pNals, &iNal, pPic_in, pPic_out);

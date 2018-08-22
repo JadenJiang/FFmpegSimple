@@ -164,7 +164,7 @@ int GetAnnexbNALU (NALU_t *nalu){
  * @param url    Location of input H.264 bitstream file.
  */
 int simplest_h264_parser(char *url){
-	url  = R"(F:\videoFile\test.h264)";
+	url  = R"(D:\videoFile\bbb.h264)";
 	NALU_t *n;
 	int buffersize=1000000;
 

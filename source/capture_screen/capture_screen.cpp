@@ -29,7 +29,7 @@ extern "C"
 #endif
 #endif
 
-#if (_MSC_VER == 1900 || _MSC_VER == 1914)
+#if (_MSC_VER == 1900 || _MSC_VER == 1915)
 #pragma comment(lib, "legacy_stdio_definitions.lib")
 extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 #endif
