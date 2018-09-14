@@ -202,7 +202,7 @@ int simplest_pcm16le_to_pcm8(char *url);
  */
 int simplest_pcm16le_to_wave(const char *pcmpath,int channels,int sample_rate,const char *wavepath);
 
-
+int simplest_h264SEI_parser(char *url);
 
 int main(int argc, char* argv[]){
 
@@ -241,13 +241,15 @@ int main(int argc, char* argv[]){
 
 	//simplest_pcm16le_to_wave("NocturneNo2inEflat_44.1k_s16le.pcm",2,44100,"output_nocturne.wav");
 
-	simplest_h264_parser("sintel.h264");
+	//simplest_h264_parser("sintel.h264");
 
 	//simplest_flv_parser("cuc_ieschool.flv");
 
 	//simplest_aac_parser("nocturne.aac");
 
 	//simplest_udp_parser(8880);
+
+    simplest_h264SEI_parser("");
 
 	return 0;
 }

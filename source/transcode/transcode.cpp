@@ -1,14 +1,5 @@
 #include "transcode.h"
 
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
-#include <libavutil/opt.h>
-#include <libavutil/pixdesc.h>
-}
 
 static AVFormatContext *ifmt_ctx;
 static AVFormatContext *ofmt_ctx;
@@ -498,7 +489,7 @@ int main(int argc, char **argv)
     int(*dec_func)(AVCodecContext *, AVFrame *, int *, const AVPacket *);
 
     char filepath[] = R"(D:\videoFile\test\world.mp4)";
-    char output[] = R"(D:\videoFile\test\test.mp4)";
+    char output[] = R"(D:\videoFile\test\test.ts)";
 
     if ((ret = open_input_file(filepath)) < 0)
         goto end;
@@ -514,6 +505,14 @@ int main(int argc, char **argv)
         if (stream_ctx[packet.stream_index].dec_ctx == nullptr)
             continue;
         stream_index = packet.stream_index;
+
+
+        //packet.pts;
+        //packet.dts;
+        //ifmt_ctx->streams[packet.stream_index]->time_base;
+        //av_packet_rescale_ts(&packet, ifmt_ctx->streams[packet.stream_index]->time_base, {1, 1000000});
+
+
         type = ifmt_ctx->streams[packet.stream_index]->codecpar->codec_type;
         av_log(NULL, AV_LOG_DEBUG, "Demuxer gave frame of stream_index %u\n",
             stream_index);

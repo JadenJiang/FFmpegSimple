@@ -76,6 +76,11 @@ int main(int argc, char** argv)
     //pParam->analyse.inter = X264_ANALYSE_I4x4 | X264_ANALYSE_I8x8 | X264_ANALYSE_PSUB16x16 | X264_ANALYSE_PSUB8x8;
     pParam->analyse.inter = X264_ANALYSE_I8x8 | X264_ANALYSE_I4x4;
     ret = x264_param_parse(pParam, "deblock", "-1,-1");
+    {
+        pParam->b_deblocking_filter;
+        pParam->i_deblocking_filter_beta;
+        pParam->i_deblocking_filter_alphac0;
+    }
     pParam->analyse.i_subpel_refine = 2;
 
 	///////////////////////////X264_RC_CQP///////////////////////////////////////////////

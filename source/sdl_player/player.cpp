@@ -68,6 +68,29 @@ int sfp_refresh_thread(void *opaque) {
 }
 
 
+static int decode(AVCodecContext *avctx, AVFrame *frame, int *got_frame, AVPacket *pkt)
+{
+    int ret;
+
+    *got_frame = 0;
+
+    if (pkt) {
+        ret = avcodec_send_packet(avctx, pkt);
+        // In particular, we don't expect AVERROR(EAGAIN), because we read all
+        // decoded frames with avcodec_receive_frame() until done.
+        if (ret < 0 && ret != AVERROR_EOF)
+            return ret;
+    }
+
+    ret = avcodec_receive_frame(avctx, frame);
+    if (ret < 0 && ret != AVERROR(EAGAIN))
+        return ret;
+    if (ret >= 0)
+        *got_frame = 1;
+
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -178,7 +201,8 @@ int main(int argc, char* argv[])
             if (av_read_frame(pFormatCtx, packet) >= 0) {
                 if (packet->stream_index == videoindex) {
                     AVStream *stream = pFormatCtx->streams[videoindex];
-                    ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, packet);
+                    //ret = avcodec_decode_video2(pCodecCtx, pFrame, &got_picture, packet);
+                    ret = decode(pCodecCtx, pFrame, &got_picture, packet);
                     printf("pts %f  dts %f  key_frame %d  got_picture %d\n", packet->pts / 12800.0, packet->dts / 12800.0, packet->flags, got_picture);
                     if (ret < 0) {
                         printf("Decode Error.\n");

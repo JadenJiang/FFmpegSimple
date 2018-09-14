@@ -1,10 +1,11 @@
-#ifndef AUIDO_RESAMPLE_H_
-#define AUIDO_RESAMPLE_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
 #endif
 {
+#include "libavfilter/buffersink.h"
+#include "libavfilter/buffersrc.h"
 #include "libavutil/audio_fifo.h"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
@@ -97,11 +98,4 @@ private:
     enum AVSampleFormat m_dst_format;
 };
 
-
-
-
-
-
-
-#endif // !AUIDO_RESAMPLE_H_
 
