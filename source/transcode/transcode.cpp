@@ -16,6 +16,28 @@ typedef struct StreamContext {
 } StreamContext;
 static StreamContext *stream_ctx;
 
+static int decode(AVCodecContext *avctx, AVFrame *frame, int *got_frame, AVPacket *pkt)
+{
+    int ret;
+
+    *got_frame = 0;
+
+    if (pkt) {
+        ret = avcodec_send_packet(avctx, pkt);
+        // In particular, we don't expect AVERROR(EAGAIN), because we read all
+        // decoded frames with avcodec_receive_frame() until done.
+        if (ret < 0 && ret != AVERROR_EOF)
+            return ret;
+    }
+
+    ret = avcodec_receive_frame(avctx, frame);
+    if (ret < 0 && ret != AVERROR(EAGAIN))
+        return ret;
+    if (ret >= 0)
+        *got_frame = 1;
+
+    return 0;
+}
 static int open_input_file(const char *filename)
 {
     int ret;
@@ -486,10 +508,9 @@ int main(int argc, char **argv)
     unsigned int stream_index;
     unsigned int i;
     int got_frame;
-    int(*dec_func)(AVCodecContext *, AVFrame *, int *, const AVPacket *);
 
-    char filepath[] = R"(D:\videoFile\test\world.mp4)";
-    char output[] = R"(D:\videoFile\test\test.ts)";
+    char filepath[] = R"(F:\videoFile\bbb.mp4)";
+    char output[] = R"(F:\videoFile\test.ts)";
 
     if ((ret = open_input_file(filepath)) < 0)
         goto end;
@@ -500,8 +521,13 @@ int main(int argc, char **argv)
 
     /* read all packets */
     while (1) {
-        if ((ret = av_read_frame(ifmt_ctx, &packet)) < 0)
+        ret = av_read_frame(ifmt_ctx, &packet);
+        if (ret == AVERROR_EOF) {
             break;
+        }
+        else if (ret < 0) {
+            break;
+        }
         if (stream_ctx[packet.stream_index].dec_ctx == nullptr)
             continue;
         stream_index = packet.stream_index;
@@ -527,9 +553,8 @@ int main(int argc, char **argv)
             av_packet_rescale_ts(&packet,
                 ifmt_ctx->streams[stream_index]->time_base,
                 stream_ctx[stream_index].dec_ctx->time_base);
-            dec_func = (type == AVMEDIA_TYPE_VIDEO) ? avcodec_decode_video2 :
-                avcodec_decode_audio4;
-            ret = dec_func(stream_ctx[stream_index].dec_ctx, frame,
+
+            ret = decode(stream_ctx[stream_index].dec_ctx, frame,
                 &got_frame, &packet);
             if (ret < 0) {
                 av_frame_free(&frame);
