@@ -44,6 +44,8 @@ set(PROJECTS
     #audio_filter
     test_cpp
     transcode
+	hw_decode
+	hw_encode
     remuxer
 )
 
