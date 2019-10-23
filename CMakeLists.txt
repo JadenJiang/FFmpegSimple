@@ -47,6 +47,7 @@ set(PROJECTS
 	hw_decode
 	hw_encode
     remuxer
+	decode_video
 )
 
 
